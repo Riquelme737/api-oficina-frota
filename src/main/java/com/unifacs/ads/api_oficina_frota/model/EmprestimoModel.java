@@ -5,7 +5,7 @@ import com.unifacs.ads.api_oficina_frota.enums.Turno;
 import jakarta.persistence.*;
 
 
-import java.sql.Timestamp;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -28,15 +28,32 @@ public class EmprestimoModel {
     @Column(name = "turno", nullable = false)
     private Turno turnoTrabalho;
 
+    @ManyToOne
+    @JoinColumn(name = "id_operador")
+    private OperadorModel operador;
+
+    @ManyToOne
+    @JoinColumn(name = "id_ferramenta")
+    private FerramentaModel ferramenta;
+
+    @ManyToOne
+    @JoinColumn(name = "id_os")
+    private OrdemServicoModel ordemServico;
 
     public EmprestimoModel(UUID id, Instant checkIn, Instant checkOut,
                            Turno turnoTrabalho,
-                           StatusDevolucao statusDevolucao) {
+                           StatusDevolucao statusDevolucao,
+                           OperadorModel operador,
+                           FerramentaModel ferramenta,
+                           OrdemServicoModel ordemServico) {
         this.id = id;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.turnoTrabalho = turnoTrabalho;
         this.statusDevolucao = statusDevolucao;
+        this.operador = operador;
+        this.ferramenta = ferramenta;
+        this.ordemServico = ordemServico;
     }
 
     public EmprestimoModel() {
@@ -80,5 +97,29 @@ public class EmprestimoModel {
 
     public void setTurnoTrabalho(Turno turnoTrabalho) {
         this.turnoTrabalho = turnoTrabalho;
+    }
+
+    public OperadorModel getOperador() {
+        return operador;
+    }
+
+    public void setOperador(OperadorModel operador) {
+        this.operador = operador;
+    }
+
+    public FerramentaModel getFerramenta() {
+        return ferramenta;
+    }
+
+    public void setFerramenta(FerramentaModel ferramenta) {
+        this.ferramenta = ferramenta;
+    }
+
+    public OrdemServicoModel getOrdemServico() {
+        return ordemServico;
+    }
+
+    public void setOrdemServico(OrdemServicoModel ordemServico) {
+        this.ordemServico = ordemServico;
     }
 }

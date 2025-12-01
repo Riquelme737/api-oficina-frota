@@ -2,6 +2,7 @@ package com.unifacs.ads.api_oficina_frota.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,12 +16,16 @@ public class OrdemServicoModel {
     @Column(name = "descricao", nullable = false)
     private String descricao;
 
+    @OneToMany(mappedBy = "ordemServico")
+    private List<EmprestimoModel> emprestimos;
+
     public OrdemServicoModel() {
     }
 
-    public OrdemServicoModel(UUID id, String descricao) {
+    public OrdemServicoModel(UUID id, String descricao, List<EmprestimoModel> emprestimos) {
         this.id = id;
         this.descricao = descricao;
+        this.emprestimos = emprestimos;
     }
 
     public UUID getId() {
@@ -37,5 +42,13 @@ public class OrdemServicoModel {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public List<EmprestimoModel> getEmprestimos() {
+        return emprestimos;
+    }
+
+    public void setEmprestimos(List<EmprestimoModel> emprestimos) {
+        this.emprestimos = emprestimos;
     }
 }
