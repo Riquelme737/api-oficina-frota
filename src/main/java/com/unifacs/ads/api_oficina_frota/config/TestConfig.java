@@ -39,11 +39,15 @@ public class TestConfig implements CommandLineRunner {
     public void run(String... args) throws Exception {
         OperadorModel p1 = new OperadorModel(null, "joao.silva@unifacs.br", "123456", null);
         OperadorModel p2 = new OperadorModel(null, "maria.santos@unifacs.br", "abcdef", null);
-        operadorRepository.saveAll(Arrays.asList(p1, p2));
+        OperadorModel p3 = new OperadorModel(null, "rafael.silva@unifacs.br", "1ds53", null);
+        OperadorModel p4 = new OperadorModel(null, "caio.feijao@unifacs.br", "zxcv", null);
+        operadorRepository.saveAll(Arrays.asList(p1, p2, p3, p4));
 
         FerramentaModel f1 = new FerramentaModel(null, "Furadeira Bosh", StatusFerramenta.DISPONIVEL, null);
         FerramentaModel f2 = new FerramentaModel(null, "Torquímetro Digital", StatusFerramenta.EM_USO, null);
-        ferramentaRepository.saveAll(Arrays.asList(f1, f2));
+        FerramentaModel f3 = new FerramentaModel(null, "Macaco Hidráulico", StatusFerramenta.DISPONIVEL, null);
+        FerramentaModel f4 = new FerramentaModel(null, "Chave Dinalométrica", StatusFerramenta.EM_USO, null);
+        ferramentaRepository.saveAll(Arrays.asList(f1, f2, f3, f4));
 
         OrdemServicoModel os1 = new OrdemServicoModel(null, "Troca de Motor Scania", null);
         ordemServicoRepository.save(os1);

@@ -1,6 +1,7 @@
 package com.unifacs.ads.api_oficina_frota.enums;
 
 public enum StatusDevolucao {
+    PENDENTE ("Pendente"),
     NORMAL("Normal"),
     ATRASADO("Atrasado"),
     DANIFICADO("Danificado"),
