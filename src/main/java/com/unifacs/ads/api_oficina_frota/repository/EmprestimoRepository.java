@@ -12,6 +12,7 @@ import java.util.UUID;
 public interface EmprestimoRepository extends JpaRepository<EmprestimoModel, UUID> {
 
     List<EmprestimoModel> findByStatusDevolucao(StatusDevolucao statusDevolucao);
+    List<EmprestimoModel> findByStatusDevolucaoNot(StatusDevolucao statusDevolucao);
     List<EmprestimoModel> findByFerramenta(FerramentaModel ferramenta);
     List<EmprestimoModel> findByOperador(OperadorModel operadorModel);
 }

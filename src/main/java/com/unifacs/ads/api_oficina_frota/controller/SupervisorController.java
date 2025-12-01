@@ -24,4 +24,11 @@ public class SupervisorController {
     public ResponseEntity<List<EmprestimoCheckOutResponseDto>> getHistoricoFerramenta(@PathVariable String id) {
         return ResponseEntity.ok(service.consultarHistoricoFerramenta(id));
     }
+
+    @GetMapping("/historico-operador/{id}")
+    public ResponseEntity<List<EmprestimoCheckOutResponseDto>> getHistoricoOperador(@PathVariable String id) {
+        return ResponseEntity.ok(service.consultarHistoricoOperador(id));
+    }
+
+
 }
