@@ -18,7 +18,9 @@ import org.springframework.context.annotation.Profile;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @Profile("test")
@@ -38,88 +40,89 @@ public class TestConfig implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // 1. CRIAR OPERADORES
-        OperadorModel p1 = new OperadorModel(null, "joao.silva@unifacs.br", "123456", null);
-        OperadorModel p2 = new OperadorModel(null, "maria.santos@unifacs.br", "abcdef", null);
-        OperadorModel p3 = new OperadorModel(null, "rafael.silva@unifacs.br", "1ds53", null);
-        operadorRepository.saveAll(Arrays.asList(p1, p2, p3));
+        // ----------------------------------------------------------------
+        // 1. BASES (Operadores, Ferramentas, OS)
+        // ----------------------------------------------------------------
+        OperadorModel p1 = new OperadorModel(null, "joao.silva@unifacs.br", "123", null);
+        OperadorModel p2 = new OperadorModel(null, "maria.santos@unifacs.br", "123", null);
+        OperadorModel p3 = new OperadorModel(null, "rafael.silva@unifacs.br", "123", null);
+        List<OperadorModel> operadores =  operadorRepository.saveAll(Arrays.asList(p1, p2, p3));
 
-        // 2. CRIAR FERRAMENTAS
-        // Ferramentas DISPONIVEIS (já foram devolvidas ou nunca usadas)
         FerramentaModel f1 = new FerramentaModel(null, "Furadeira Bosh", StatusFerramenta.DISPONIVEL, null);
+        FerramentaModel f2 = new FerramentaModel(null, "Torquímetro Digital", StatusFerramenta.DISPONIVEL, null);
         FerramentaModel f3 = new FerramentaModel(null, "Macaco Hidráulico", StatusFerramenta.DISPONIVEL, null);
+        FerramentaModel f4 = new FerramentaModel(null, "Chave Dinalométrica", StatusFerramenta.DISPONIVEL, null);
+        FerramentaModel f5 = new FerramentaModel(null, "Scanner Automotivo", StatusFerramenta.DISPONIVEL, null);
+        List<FerramentaModel> ferramentas = ferramentaRepository.saveAll(Arrays.asList(f1, f2, f3, f4, f5));
 
-        // Ferramentas EM_USO (estão atualmente emprestadas)
-        FerramentaModel f2 = new FerramentaModel(null, "Torquímetro Digital", StatusFerramenta.EM_USO, null);
-        FerramentaModel f4 = new FerramentaModel(null, "Chave Dinalométrica", StatusFerramenta.EM_USO, null);
-
-        ferramentaRepository.saveAll(Arrays.asList(f1, f2, f3, f4));
-
-        // 3. CRIAR ORDENS DE SERVIÇO
         OrdemServicoModel os1 = new OrdemServicoModel(null, "Troca de Motor Scania", null);
         OrdemServicoModel os2 = new OrdemServicoModel(null, "Revisão Freios Volvo", null);
-        ordemServicoRepository.saveAll(Arrays.asList(os1, os2));
+        List<OrdemServicoModel> ordens = ordemServicoRepository.saveAll(Arrays.asList(os1, os2));
 
-        // --- POPULANDO EMPRÉSTIMOS COM NOVOS STATUS ---
+        // ----------------------------------------------------------------
+        // 2. GERADOR AUTOMÁTICO DE 20 EMPRÉSTIMOS (Histórico)
+        // ----------------------------------------------------------------
+        List<EmprestimoModel> emprestimosParaSalvar = new ArrayList<>();
 
-        // CENÁRIO 1: Empréstimo ATIVO (PENDENTE)
-        // Pegou há 2 horas e ainda não devolveu.
-        EmprestimoModel e1 = new EmprestimoModel(
-                null,
-                Instant.now().minus(2, ChronoUnit.HOURS),
-                null, // Sem data de devolução
-                Turno.MANHA,
-                StatusDevolucao.PENDENTE,
-                p1,
-                f2, // Torquímetro (EM_USO)
-                os1
+        for (int i = 1; i <= 1000; i++) {
+
+            // Lógica para variar os dados usando o operador de resto (%)
+            OperadorModel opAtual = operadores.get(i % operadores.size());
+            FerramentaModel ferAtual = ferramentas.get(i % ferramentas.size());
+            OrdemServicoModel osAtual = ordens.get(i % ordens.size());
+
+            // Define se é NORMAL (Pares) ou ATRASADO (Ímpares)
+            boolean isNormal = (i % 2 == 0);
+            StatusDevolucao status = isNormal ? StatusDevolucao.NORMAL : StatusDevolucao.ATRASADO;
+
+            // Define datas retroativas (Para não ficar tudo no mesmo dia)
+            // Cada iteração volta 'i' dias no passado
+            Instant dataCheckIn = Instant.now().minus(i, ChronoUnit.DAYS);
+            Instant dataCheckOut;
+
+            if (isNormal) {
+                // Devolveu 4 horas depois
+                dataCheckOut = dataCheckIn.plus(4, ChronoUnit.HOURS);
+            } else {
+                // Devolveu 26 horas depois (Atrasou o turno)
+                dataCheckOut = dataCheckIn.plus(26, ChronoUnit.HOURS);
+            }
+
+            // Alterna turnos
+            Turno turno = (i % 3 == 0) ? Turno.NOITE : (i % 2 == 0) ? Turno.TARDE : Turno.MANHA;
+
+            EmprestimoModel emp = new EmprestimoModel(
+                    null,
+                    dataCheckIn,
+                    dataCheckOut,
+                    turno,
+                    status,
+                    opAtual,
+                    ferAtual,
+                    osAtual
+            );
+            emprestimosParaSalvar.add(emp);
+        }
+
+        emprestimoRepository.saveAll(emprestimosParaSalvar);
+
+        // ----------------------------------------------------------------
+        // 3. (OPCIONAL) CRIAR UM PENDENTE SÓ PARA TESTE DE EXCLUSÃO
+        // ----------------------------------------------------------------
+        FerramentaModel f6 = new FerramentaModel(null, "Solda MIG", StatusFerramenta.EM_USO, null);
+        ferramentaRepository.save(f6);
+        EmprestimoModel pendente = new EmprestimoModel(
+                null, Instant.now(), null, Turno.MANHA, StatusDevolucao.PENDENTE,
+                p1, f6, os1
         );
+        emprestimoRepository.save(pendente);
 
-        // CENÁRIO 2: Outro Empréstimo ATIVO (PENDENTE)
-        // Pegou há 30 minutos.
-        EmprestimoModel e2 = new EmprestimoModel(
-                null,
-                Instant.now().minus(30, ChronoUnit.MINUTES),
-                null, // Sem data de devolução
-                Turno.TARDE,
-                StatusDevolucao.PENDENTE,
-                p2,
-                f4, // Chave Dinalométrica (EM_USO)
-                os2
-        );
-
-        // CENÁRIO 3: Devolução no Prazo (NORMAL)
-        // Pegou há 5 dias, devolveu 4 horas depois (rápido).
-        Instant dataCheckInNormal = Instant.now().minus(5, ChronoUnit.DAYS);
-        EmprestimoModel e3 = new EmprestimoModel(
-                null,
-                dataCheckInNormal,
-                dataCheckInNormal.plus(4, ChronoUnit.HOURS), // Devolveu 4h depois
-                Turno.NOITE,
-                StatusDevolucao.NORMAL,
-                p3,
-                f1, // Furadeira (DISPONIVEL)
-                os1
-        );
-
-        // CENÁRIO 4: Devolução com Atraso (ATRASADO)
-        // Pegou há 10 dias, mas só devolveu 20 horas depois (considerando turno de 8h, atrasou).
-        Instant dataCheckInAtrasado = Instant.now().minus(10, ChronoUnit.DAYS);
-        EmprestimoModel e4 = new EmprestimoModel(
-                null,
-                dataCheckInAtrasado,
-                dataCheckInAtrasado.plus(20, ChronoUnit.HOURS), // Devolveu quase 1 dia depois
-                Turno.MANHA,
-                StatusDevolucao.ATRASADO,
-                p1,
-                f3, // Macaco (DISPONIVEL)
-                os2
-        );
-
-        emprestimoRepository.saveAll(Arrays.asList(e1, e2, e3, e4));
 
         System.out.println("------------------------------------------------");
-        System.out.println("TESTE DB: Carga realizada com status PENDENTE, NORMAL e ATRASADO.");
+        System.out.println("CARGA DE DADOS MASSIVA EXECUTADA!");
+        System.out.println("20 Empréstimos de Histórico gerados.");
+        System.out.println("1 Empréstimo Pendente gerado.");
+        System.out.println("Total no DB: " + emprestimoRepository.count());
         System.out.println("------------------------------------------------");
     }
 }

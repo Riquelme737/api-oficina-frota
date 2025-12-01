@@ -6,6 +6,7 @@ import com.unifacs.ads.api_oficina_frota.enums.StatusDevolucao;
 import com.unifacs.ads.api_oficina_frota.model.EmprestimoModel;
 import com.unifacs.ads.api_oficina_frota.model.FerramentaModel;
 import com.unifacs.ads.api_oficina_frota.model.OperadorModel;
+import com.unifacs.ads.api_oficina_frota.model.RelatorioModel;
 import com.unifacs.ads.api_oficina_frota.repository.EmprestimoRepository;
 import com.unifacs.ads.api_oficina_frota.repository.FerramentaRepository;
 import com.unifacs.ads.api_oficina_frota.repository.OperadorRepository;
@@ -52,5 +53,13 @@ public class SupervisorService {
         return emprestimoRepository.findByStatusDevolucaoNot(StatusDevolucao.PENDENTE)
                 .stream().map(EmprestimoCheckOutResponseDto::new)
                 .toList();
+    }
+
+    public String gerarRelatorio() {
+        List<EmprestimoModel> listaHistorico = emprestimoRepository.findByStatusDevolucaoNot(StatusDevolucao.PENDENTE);
+
+        RelatorioModel relatorio = new RelatorioModel(listaHistorico);
+
+        return relatorio.exportar();
     }
 }
