@@ -1,7 +1,9 @@
 package com.unifacs.ads.api_oficina_frota.service;
 
+import com.unifacs.ads.api_oficina_frota.dto.CreateDevolucaoDto;
 import com.unifacs.ads.api_oficina_frota.dto.CreateEmprestimoDto;
-import com.unifacs.ads.api_oficina_frota.dto.EmprestimoResponseDto;
+import com.unifacs.ads.api_oficina_frota.dto.EmprestimoCheckInResponseDto;
+import com.unifacs.ads.api_oficina_frota.dto.EmprestimoCheckOutResponseDto;
 import com.unifacs.ads.api_oficina_frota.enums.StatusDevolucao;
 import com.unifacs.ads.api_oficina_frota.enums.StatusFerramenta;
 import com.unifacs.ads.api_oficina_frota.model.EmprestimoModel;
@@ -14,9 +16,9 @@ import com.unifacs.ads.api_oficina_frota.repository.OperadorRepository;
 import com.unifacs.ads.api_oficina_frota.repository.OrdemServicoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
@@ -35,7 +37,7 @@ public class EmprestimosService {
     }
 
     @Transactional
-    public EmprestimoResponseDto criarEmprestimo(@RequestBody CreateEmprestimoDto createEmprestimoDto) {
+    public EmprestimoCheckInResponseDto criarEmprestimo(CreateEmprestimoDto createEmprestimoDto) {
         OperadorModel operador = operadorRepository.findById(UUID.fromString(createEmprestimoDto.idOperador()))
                 .orElseThrow(() -> new RuntimeException("Operador não encontrado"));
 
@@ -65,6 +67,34 @@ public class EmprestimosService {
 
         EmprestimoModel emprestimoSalvo = emprestimoRepository.save(emprestimoModel);
 
-        return new EmprestimoResponseDto(emprestimoSalvo);
+        return new EmprestimoCheckInResponseDto(emprestimoSalvo);
+    }
+
+    @Transactional
+    public EmprestimoCheckOutResponseDto realizarDevolucao(CreateDevolucaoDto createDevolucaoDto) {
+        EmprestimoModel emprestimoModel = emprestimoRepository.findById(UUID.fromString(createDevolucaoDto.idEmprestimo()))
+                .orElseThrow(() -> new RuntimeException("Emprestimo não encontrado"));
+
+        if (emprestimoModel.getCheckOut() != null) {
+            throw new RuntimeException("Este empréstimo já foi finalizado");
+        }
+
+        Instant checkOut = Instant.now();
+        emprestimoModel.setCheckOut(checkOut);
+        Instant dataLimite = emprestimoModel.getCheckIn().plus(8, ChronoUnit.HOURS);
+
+        if (checkOut.isAfter(dataLimite)) {
+            emprestimoModel.setStatusDevolucao(StatusDevolucao.ATRASADO);
+        } else {
+            emprestimoModel.setStatusDevolucao(StatusDevolucao.NORMAL);
+        }
+
+        FerramentaModel ferramenta = emprestimoModel.getFerramenta();
+        ferramenta.setStatus(StatusFerramenta.DISPONIVEL);
+        ferramentaRepository.save(ferramenta);
+
+        EmprestimoModel emprestimoSalvo = emprestimoRepository.save(emprestimoModel);
+
+        return new EmprestimoCheckOutResponseDto(emprestimoSalvo);
     }
 }

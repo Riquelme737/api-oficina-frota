@@ -5,9 +5,8 @@ import com.unifacs.ads.api_oficina_frota.enums.Turno;
 import com.unifacs.ads.api_oficina_frota.model.EmprestimoModel;
 
 import java.time.Instant;
-import java.util.UUID;
 
-public record EmprestimoResponseDto(
+public record EmprestimoCheckInResponseDto(
         String id,
         String emailOperador,
         String nomeFerramenta,
@@ -16,7 +15,7 @@ public record EmprestimoResponseDto(
         Turno turno,
         StatusDevolucao status
 ) {
-    public EmprestimoResponseDto (EmprestimoModel model){
+    public EmprestimoCheckInResponseDto(EmprestimoModel model){
         this(
                 model.getId().toString(),
                 model.getOperador().getEmail(),
