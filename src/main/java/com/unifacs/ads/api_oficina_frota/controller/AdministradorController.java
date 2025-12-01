@@ -1,6 +1,8 @@
 package com.unifacs.ads.api_oficina_frota.controller;
 
+import com.unifacs.ads.api_oficina_frota.dto.CreateFerramentaDto;
 import com.unifacs.ads.api_oficina_frota.dto.CreateOperadorDto;
+import com.unifacs.ads.api_oficina_frota.dto.FerramentaResponseDto;
 import com.unifacs.ads.api_oficina_frota.dto.OperadorResponseDto;
 import com.unifacs.ads.api_oficina_frota.service.AdministradorService;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +28,11 @@ public class AdministradorController {
     public ResponseEntity<OperadorResponseDto> cadastrarOperador (@RequestBody CreateOperadorDto createOperadorDto) {
         UUID operadorId = service.cadastrarOperador(createOperadorDto);
         return ResponseEntity.created(URI.create("/operador/id/" + operadorId.toString())).build();
+    }
+
+    @PostMapping("/cadastrar-ferramenta")
+    public ResponseEntity<FerramentaResponseDto> cadastrarFerramenta(@RequestBody CreateFerramentaDto createFerramentaDto) {
+        UUID ferramentaId = service.cadastrarFerramenta(createFerramentaDto);
+        return ResponseEntity.created(URI.create("/ferramenta/id/" + ferramentaId.toString())).build();
     }
 }

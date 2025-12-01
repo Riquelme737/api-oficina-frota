@@ -15,8 +15,15 @@ public class OperadorModel extends UsuarioModel{
     @OneToMany(mappedBy = "operador")
     private List<EmprestimoModel> emprestimos;
 
+    public OperadorModel() {
+    }
+
     public OperadorModel(UUID id, String email, String senha, List<EmprestimoModel> emprestimos) {
         super(id, email, senha);
         this.emprestimos = emprestimos;
+    }
+
+    public OperadorModel(UUID id, String email, String senha) {
+        super(id, email, senha);
     }
 }
