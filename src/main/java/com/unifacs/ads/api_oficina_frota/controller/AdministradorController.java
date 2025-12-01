@@ -1,9 +1,6 @@
 package com.unifacs.ads.api_oficina_frota.controller;
 
-import com.unifacs.ads.api_oficina_frota.dto.CreateFerramentaDto;
-import com.unifacs.ads.api_oficina_frota.dto.CreateOperadorDto;
-import com.unifacs.ads.api_oficina_frota.dto.FerramentaResponseDto;
-import com.unifacs.ads.api_oficina_frota.dto.OperadorResponseDto;
+import com.unifacs.ads.api_oficina_frota.dto.*;
 import com.unifacs.ads.api_oficina_frota.service.AdministradorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,15 +21,21 @@ public class AdministradorController {
         this.service = service;
     }
 
-    @PostMapping("/cadastrar-operador")
+    @PostMapping("/cadastrar/operador")
     public ResponseEntity<OperadorResponseDto> cadastrarOperador (@RequestBody CreateOperadorDto createOperadorDto) {
         UUID operadorId = service.cadastrarOperador(createOperadorDto);
         return ResponseEntity.created(URI.create("/operador/id/" + operadorId.toString())).build();
     }
 
-    @PostMapping("/cadastrar-ferramenta")
+    @PostMapping("/cadastrar/ferramenta")
     public ResponseEntity<FerramentaResponseDto> cadastrarFerramenta(@RequestBody CreateFerramentaDto createFerramentaDto) {
         UUID ferramentaId = service.cadastrarFerramenta(createFerramentaDto);
         return ResponseEntity.created(URI.create("/ferramenta/id/" + ferramentaId.toString())).build();
+    }
+
+    @PostMapping("/cadastrar/ordem-de-servico")
+    public ResponseEntity<OrdemServicoResponseDto> cadastrarOrdemServico(@RequestBody CreateOrdemServicoDto createOrdemServicoDto) {
+        UUID osId = service.cadastrarOrdemServico(createOrdemServicoDto);
+        return ResponseEntity.created(URI.create("/os/id/" + osId.toString())).build();
     }
 }
