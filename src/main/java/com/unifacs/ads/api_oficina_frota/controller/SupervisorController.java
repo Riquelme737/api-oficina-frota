@@ -30,5 +30,8 @@ public class SupervisorController {
         return ResponseEntity.ok(service.consultarHistoricoOperador(id));
     }
 
-
+    @GetMapping("/todos-historicos")
+    public ResponseEntity<List<EmprestimoCheckOutResponseDto>> todosEmprestimosExcluindoPendente() {
+        return ResponseEntity.ok(service.todosOsEmprestimosExcluindoPendente());
+    }
 }

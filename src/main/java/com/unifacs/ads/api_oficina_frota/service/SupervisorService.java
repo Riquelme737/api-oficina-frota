@@ -48,5 +48,9 @@ public class SupervisorService {
                 .toList();
     }
 
-
+    public List<EmprestimoCheckOutResponseDto> todosOsEmprestimosExcluindoPendente() {
+        return emprestimoRepository.findByStatusDevolucaoNot(StatusDevolucao.PENDENTE)
+                .stream().map(EmprestimoCheckOutResponseDto::new)
+                .toList();
+    }
 }
