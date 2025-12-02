@@ -91,9 +91,6 @@ Execute no terminal:
 O projeto foi validado com um script Python (Jupyter Notebook) que consome o CSV gerado pelo Backend.
 1. O Backend gera o CSV com a coluna calculada duracao_horas.
 2. O Modelo (KNN) treinado com esses dados alcançou 92% de acurácia na previsão de atrasos.
-3. Métricas do Modelo:
-   + Precision (Atrasado): 1.00 (100% de certeza ao acusar atraso).
-   + Recall (Atrasado): 0.84 (Detecta 84% dos atrasos reais).
 
 ---
 
