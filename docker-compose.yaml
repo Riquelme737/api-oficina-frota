@@ -1,38 +1,38 @@
-services:
-  db:
-    image: postgres:15-alpine
-    container_name: oficina-db
-    environment:
-      POSTGRES_DB: oficina_frota_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password123
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: oficina-api
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    environment:
-      # 1. AQUI VOCÊ DEFINE O PROFILE
-      SPRING_PROFILES_ACTIVE: dev
-
-      # 2. AQUI VOCÊ FORÇA A CONEXÃO COM O BANCO DO DOCKER
-      # Note que usamos 'db' em vez de 'localhost'
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/oficina_frota_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password123
-
-      # 3. CONFIGURAÇÃO DO HIBERNATE PARA DOCKER
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
-
-volumes:
-  postgres_data:
+#services:
+#  db:
+#    image: postgres:15-alpine
+#    container_name: oficina-db
+#    environment:
+#      POSTGRES_DB: oficina_frota_db
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: password123
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: oficina-api
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - db
+#    environment:
+#      # 1. AQUI VOCÊ DEFINE O PROFILE
+#      SPRING_PROFILES_ACTIVE: dev
+#
+#      # 2. AQUI VOCÊ FORÇA A CONEXÃO COM O BANCO DO DOCKER
+#      # Note que usamos 'db' em vez de 'localhost'
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/oficina_frota_db
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: password123
+#
+#      # 3. CONFIGURAÇÃO DO HIBERNATE PARA DOCKER
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+#
+#volumes:
+#  postgres_data:
