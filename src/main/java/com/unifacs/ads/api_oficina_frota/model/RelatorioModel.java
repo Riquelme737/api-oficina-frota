@@ -1,5 +1,6 @@
 package com.unifacs.ads.api_oficina_frota.model;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -23,7 +24,7 @@ public class RelatorioModel {
 
         //csv.append("Relatório de Histórico Fechado;Gerado em: ;").append(FORMATTER.format(dataGeracao)).append("\n\n");
 
-        csv.append("id_emprestimo;operador;ferramenta;check_in;check_out;turno;status;label\n");
+        csv.append("id_emprestimo;operador;ferramenta;ordem_servico;check_in;check_out;duracao_horas;turno;label\n");
 
         for (EmprestimoModel emp : dados) {
             csv.append(emp.getId()).append(";");
@@ -36,6 +37,13 @@ public class RelatorioModel {
 
             csv.append(formatarData(emp.getCheckIn())).append(";");
             csv.append(formatarData(emp.getCheckOut())).append(";");
+
+            if (emp.getCheckIn() != null && emp.getCheckOut() != null) {
+                long horas = Duration.between(emp.getCheckIn(), emp.getCheckOut()).toHours();
+                csv.append(horas).append(";");
+            } else {
+                csv.append("0;");
+            }
 
             csv.append(emp.getTurnoTrabalho()).append(";");
             csv.append(emp.getStatusDevolucao()).append("\n");
