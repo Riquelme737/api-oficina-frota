@@ -24,7 +24,14 @@ public class AdministradorController {
     @PostMapping("/cadastrar/operador")
     public ResponseEntity<OperadorResponseDto> cadastrarOperador (@RequestBody CreateOperadorDto createOperadorDto) {
         UUID operadorId = service.cadastrarOperador(createOperadorDto);
-        return ResponseEntity.created(URI.create("/operador/id/" + operadorId.toString())).build();
+
+        OperadorResponseDto operadorResponseDto = new OperadorResponseDto(
+                operadorId.toString(),
+                createOperadorDto.email()
+        );
+
+        URI localtion = URI.create("/operador/id" + operadorId.toString());
+        return ResponseEntity.created(localtion).body(operadorResponseDto);
     }
 
     @PostMapping("/cadastrar/ferramenta")
