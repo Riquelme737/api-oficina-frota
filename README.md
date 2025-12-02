@@ -23,7 +23,7 @@ Sistema de backend desenvolvido com **Spring Boot** para o rastreamento, control
 ## 📦 Como Rodar a Aplicação
 
 ### Pré-requisitos
-* Java 17 instalado.
+* Java 21 instalado.
 * Maven (ou use o wrapper `mvnw` incluso).
 
 ### Passo a Passo
@@ -69,7 +69,7 @@ O sistema calculará automaticamente se está `NORMAL` ou `ATRASADO`.
 * **Body (JSON):**
     ```json
     {
-        "idEmprestimo": "uuid-do-emprestimo-pendente",
+        "idEmprestimo": "uuid-do-emprestimo-pendente"
     }
     ```
 
